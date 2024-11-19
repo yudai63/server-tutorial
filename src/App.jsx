@@ -1,53 +1,33 @@
 import { useState } from "react";
 
 export default function App() {
-  const [showStory, setShowStory] = useState(false);
   const [story, setStory] = useState("");
-  const [customName, setCustomName] = useState("");
-  const [selectedUnit, setSelectedUnit] = useState("us");
-
-  const handleRadioChange = (event) => {
-    setSelectedUnit(event.target.value);
-  };
 
   const generateStory = async () => {
-    const response = await fetch(`/api/randomStory?name=${customName}&unit=${selectedUnit}`);
+    const name = document.querySelector("input[type='text']").value || "Bob";
+    const unit = document.querySelector("input[type='radio']:checked").value || "us";
+
+    const response = await fetch(`.netlify/functions/randomStory?name=${name}&unit=${unit}`);
     const data = await response.json();
     setStory(data.story);
-    setShowStory(true);
   };
 
   return (
     <>
       <div>
         <label htmlFor="customname">Enter custom name:</label>
-        <input
-          type="text"
-          value={customName}
-          onChange={(e) => setCustomName(e.target.value)}
-          placeholder=""
-        />
+        <input type="text" placeholder=""  />
       </div>
       <div>
         <label htmlFor="us">US</label>
-        <input
-          type="radio"
-          value="us"
-          checked={selectedUnit === "us"}
-          onChange={handleRadioChange}
-        />
+        <input type="radio" name="unit" value="us" defaultChecked />
         <label htmlFor="uk">UK</label>
-        <input
-          type="radio"
-          value="uk"
-          checked={selectedUnit === "uk"}
-          onChange={handleRadioChange}
-        />
+        <input type="radio" name="unit" value="uk"  />
       </div>
       <div>
         <button onClick={generateStory}>Generate random story</button>
       </div>
-      {showStory && <p>{story}</p>}
+      {story && <p>{story}</p>}
     </>
   );
 }
